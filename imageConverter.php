@@ -1,16 +1,22 @@
 <?php
+set_time_limit(0);
 
 $target_dir = "./assets/img/toConvert/";
 $new_filename = "./assets/img/converted";
-
-//if(!is_dir($target_dir)){
-//    die("You need to give up an valid directory!");
-//}
-
-
 $newName_Prefix = "spitsbergen";
+
+$convertTo = "jpeg"; // Options: ['jpeg', 'png', 'gif']
+
+
 $count = 0;
+
 $limit = 150;
+
+
+
+
+
+
 
 echo "Calculating files to convert..." . "<br>";
 $fileCount = 0;
@@ -21,7 +27,7 @@ foreach (scandir($target_dir) as $file) {
     }
 }
 
-echo $fileCount . " Files found. Converting all to JPEG files...." . "<br>";
+echo $fileCount . " Files found. Converting all to $convertTo files...." . "<br>";
 
 if($fileCount > $limit){
     $diff = $fileCount - $limit;
@@ -36,7 +42,7 @@ foreach (scandir($target_dir) as $file) {
         $count++;
         $filePath = $target_dir . "/" . $file;
         $info = getimagesize($filePath);
-        $newName = $newName_Prefix . "_" . $count . ".jpeg";
+        $newName = $newName_Prefix . "_" . $count . "." . $convertTo;
         if ($info['mime'] == 'image/jpeg') {
             $image = imagecreatefromjpeg($filePath);
         } elseif ($info['mime'] == 'image/gif') {
@@ -52,7 +58,14 @@ foreach (scandir($target_dir) as $file) {
 
         $ext = pathinfo($filePath, PATHINFO_EXTENSION);
 
-        imagejpeg($image, $new_filename . "/" . $newName, 50);
+        if($convertTo == "jpeg") {
+            imagejpeg($image, $new_filename . "/" . $newName, 50);
+        }elseif($convertTo == "png"){
+            imagepng($image, $new_filename . "/" . $newName, 5);
+        } elseif($convertTo == "gif"){
+            imagegif($image, $new_filename . "/" . $newName, 50);
+        }
+
 
         echo "Image converted to " . $newName . "<br>";
     }
